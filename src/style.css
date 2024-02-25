@@ -1,0 +1,14 @@
+.banner{
+    background-Image: url('/img/banner.jpg');
+	background-Size: "cover";
+    background-Position: "center";
+    background-Repeat: "no-repeat";
+	width:"100%";
+	height:"100%";
+    color: "white";
+    text-Align: "center";
+    padding-Top: "150px";
+    padding-Bottom: "150px";
+    margin: "0";
+
+};

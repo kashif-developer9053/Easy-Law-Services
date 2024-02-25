@@ -1,0 +1,27 @@
+.card1{
+    background-color: black;
+    color: whitesmoke;
+    height: 90%;
+    border: 3px white solid;
+    padding: 0;
+    box-shadow: 0 0 10px grey;
+    border-radius: 6px;
+}
+.card1:hover{
+    box-shadow: 0 0 25px grey;
+}
+.card1 img{
+    height: 55%;
+}
+.button{
+    background-color: azure;
+    color: black;
+}
+.name{
+    font-size: 18px;
+}
+.beautiful-heading{
+    text-align: center;
+    padding: 10px;
+    color: black;
+}

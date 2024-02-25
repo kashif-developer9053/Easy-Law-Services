@@ -1,0 +1,19 @@
+.mb-0{
+  
+    color:black;
+    padding: 5px;
+    font-size: 13px;
+   
+}
+.logo{
+    width: 130px;
+}
+
+.fa-search{
+    color: greenyellow;
+}
+.search-input{
+    background-color: black;
+    color: whitesmoke;
+    
+}
