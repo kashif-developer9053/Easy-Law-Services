@@ -10,9 +10,23 @@ const UserDashboard = () => {
   const [postedJobs, setPostedJobs] = useState([]);
   const history = useHistory();
 
+  // Add the Axios interceptor here
+  axios.interceptors.response.use(
+    (response) => response,
+    (error) => {
+      if (error.response && error.response.status === 401) {
+        history.push('/signin');
+      }
+      return Promise.reject(error);
+    }
+  );
+
   const fetchPostedJobs = useCallback(async () => {
     try {
-      const response = await axios.get(`http://localhost:5000/api/jobs/user/${userId}`);
+      const response = await axios.get(`http://localhost:5000/api/jobs/user/${userId}`, {
+        withCredentials: true,
+      });
+
       console.log('Response from server:', response);
 
       if (response.data.success) {
@@ -42,17 +56,6 @@ const UserDashboard = () => {
       history.push('/signin');
     }
   }, [history, fetchPostedJobs]);
-
-  // Add this outside of the useEffect
-  axios.interceptors.response.use(
-    (response) => response,
-    (error) => {
-      if (error.response && error.response.status === 401) {
-        history.push('/signin');
-      }
-      return Promise.reject(error);
-    }
-  );
 
   const handleJobPost = () => {
     // Redirect to the job posting page

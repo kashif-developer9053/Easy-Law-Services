@@ -45,6 +45,15 @@ const jobSchema = new mongoose.Schema({
 
 const Job = mongoose.model('Job', jobSchema);
 
+
+function isAuthenticated(req, res, next) {
+  if (req.isAuthenticated()) {
+    return next();
+  }
+  res.redirect('/signin');
+}
+
+
 // Passport.js configuration
 passport.use(new LocalStrategy({ usernameField: 'email' }, async (email, password, done) => {
   try {
@@ -123,11 +132,6 @@ app.get('/api/user/logout', (req, res) => {
 app.get('/api/jobs/user/:userId', isAuthenticated, async (req, res) => {
   try {
     const userId = req.params.userId;
-    if (!userId) {
-      console.error('Invalid userId:', userId);
-      return res.status(400).json({ error: 'Invalid userId' });
-    }
-
     console.log('Fetching jobs for user:', userId); // Add this line for debugging
 
     const userJobs = await Job.find({ userId });
@@ -138,13 +142,8 @@ app.get('/api/jobs/user/:userId', isAuthenticated, async (req, res) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 });
-// Middleware to check if the user is authenticated
-function isAuthenticated(req, res, next) {
-  if (req.isAuthenticated()) {
-    return next();
-  }
-  res.redirect('/signin');
-}
+
+
 
 app.post('/api/jobs/post', async (req, res) => {
   try {
@@ -167,25 +166,27 @@ app.post('/api/jobs/post', async (req, res) => {
   }
 });
 
-// Fetch Jobs endpoint
-app.get('/api/jobs/user/:userId', isAuthenticated, async (req, res) => {
+// User Dashboard endpoint
+app.get('/api/user/dashboard', isAuthenticated, async (req, res) => {
+  console.log('Fetching user dashboard'); // Add this line for debugging
+
   try {
-    const userId = req.params.userId;
-    if (!userId) {
-      console.error('Invalid userId:', userId);
-      return res.status(400).json({ error: 'Invalid userId' });
-    }
+    const userId = req.user._id;
 
-    console.log('Fetching jobs for user:', userId); // Add this line for debugging
+    // Fetch user details
+    const user = await User.findById(userId);
 
+    // Fetch jobs for the user
     const userJobs = await Job.find({ userId });
 
-    res.status(200).json({ success: true, jobs: userJobs });
+    res.status(200).json({ success: true, message: 'User dashboard', user, jobs: userJobs });
   } catch (error) {
-    console.error('Error fetching user jobs:', error);
+    console.error('Error fetching user dashboard:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
+
+
 // Add a catch-all route for any unmatched routes
 app.get('*', (req, res) => {
   res.redirect('/signin');
