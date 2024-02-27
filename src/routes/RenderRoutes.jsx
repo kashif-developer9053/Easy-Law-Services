@@ -6,7 +6,7 @@ import Signin from "pages/RegistrationPage/Signin";
 import LawyerLogin from "pages/RegistrationPage/lawyerlogin";
 // import Messages from "pages/Message/Messages";
 import Userdashboard from "pages/UserLanding/userdashboard";
-import Jobposting from "pages/UserLanding/JobPostingForm";
+import Jobposting from "pages/UserLanding/JobPosting";
 import Nav from "components/NavBars/nav";
 import MultiStepForm from "pages/RegistrationPage/MultiStepForm";
 import FreelancerFeed from "pages/Feeds/Freelancer/FreelancerFeed";

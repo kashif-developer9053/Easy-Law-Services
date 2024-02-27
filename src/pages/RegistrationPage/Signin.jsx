@@ -4,37 +4,56 @@ import { Link, useHistory } from 'react-router-dom';
 import axios from 'axios';
 import './signin.css';
 
+axios.interceptors.request.use(
+  (config) => {
+    console.log('Request payload:', config.data);
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
+axios.interceptors.response.use(
+  (response) => {
+    console.log('Response data:', response.data);
+    return response;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
 const SignIn = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showError, setShowError] = useState(false);
   const history = useHistory();
 
-  // Assuming you have obtained the user ID from the server response
-const handleSignIn = async () => {
-  try {
-    const response = await axios.post('http://localhost:5000/api/user/login', {
-      email: email,
-      password: password,
-    });
+  const handleSignIn = async () => {
+    try {
+      const response = await axios.post(`${process.env.REACT_APP_API_URL}/api/user/login`, {
+        email,
+        password,
+      });
 
-    if (response.data.success) {
-      const { _id, firstName, lastName } = response.data.user;
+      if (response.data.success) {
+        const { token } = response.data;
 
-      // Store user information in local storage
-      localStorage.setItem('user', JSON.stringify({ _id, firstName, lastName }));
+        // Store the token in localStorage
+        localStorage.setItem('token', token);
 
-      history.push('/userdashboard');
-    } else {
+        // Redirect to the user dashboard
+        history.push('/userdashboard');
+      } else {
+        setShowError(true);
+        console.error('Sign-in failed. Incorrect email or password.');
+      }
+    } catch (error) {
       setShowError(true);
-      console.error('Sign-in failed. Incorrect email or password.');
+      console.error('Error during sign-in:', error.message);
     }
-  } catch (error) {
-    setShowError(true);
-    console.error('Error during sign-in:', error);
-  }
-};
-
+  };
 
   return (
     <Container className="container">

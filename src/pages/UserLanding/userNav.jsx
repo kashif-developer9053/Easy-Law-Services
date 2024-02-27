@@ -1,6 +1,6 @@
 import { AppBar, Container, Grid,  } from "@material-ui/core";
 import { Link, useHistory } from "react-router-dom";
-import axios from "axios";
+import { logout } from '../../logout/authUtils';
 
 const UserNav = ({ userFirstName }) => {
 
@@ -9,25 +9,10 @@ const UserNav = ({ userFirstName }) => {
  
 
   const handleLogout = async () => {
-    try {
-      const response = await axios.get("http://localhost:5000/api/user/logout");
+    const success = await logout();
 
-      if (response.data.success) {
-        localStorage.removeItem("user");
-        history.push("/signin");
-      } else {
-        console.error("Logout failed:", response.data.message);
-      }
-    } catch (error) {
-      console.error("Error during logout:", error.message, error.response);
-
-      if (error.response) {
-        console.error("Error response:", error.response.data);
-      }
-
-      if (error.request) {
-        console.error("No response received:", error.request);
-      }
+    if (success) {
+      history.push("/signin");
     }
   };
 

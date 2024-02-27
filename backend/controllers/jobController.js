@@ -1,63 +1,35 @@
-const bcrypt = require('bcrypt');
-const User = require('../models/userModel');
+const Job = require('../models/jobModel');
 
-const userController = {
-  register: async (req, res) => {
-    try {
-      const { firstName, lastName, email, phone, address, password } = req.body;
+exports.createJob = async (req, res) => {
+  try {
+    const { userId, title, description, budget, location } = req.body;
 
-      const hashedPassword = await bcrypt.hash(password, 10);
-
-      const newUser = new User({ firstName, lastName, email, phone, address, password: hashedPassword });
-      await newUser.save();
-
-      res.status(201).json({ message: 'User registered successfully' });
-    } catch (error) {
-      res.status(500).json({ error: 'Internal server error' });
-    }
-  },
-
-  login: (req, res) => {
-    const { _id, firstName, lastName, email, phone, address } = req.user;
-    res.status(200).json({
-      success: true,
-      message: 'Login successful',
-      user: { _id, firstName, lastName, email, phone, address },
+    const newJob = new Job({
+      userId,
+      title,
+      description,
+      budget,
+      location,
     });
-  },
 
-  logout: (req, res) => {
-    try {
-      req.logout((err) => {
-        if (err) {
-          console.error('Error during logout:', err);
-          return res.status(500).json({ success: false, message: 'Logout failed' });
-        }
+    await newJob.save();
 
-        res.status(200).json({ success: true, message: 'Logout successful' });
-      });
-    } catch (error) {
-      console.error('Error during logout:', error);
-      res.status(500).json({ success: false, message: 'Logout failed' });
-    }
-  },
-
-  getUserDashboard: async (req, res) => {
-    try {
-      const userId = req.user._id;
-
-      // Fetch user details
-      const user = await User.findById(userId);
-
-      // Fetch jobs for the user
-      const userJobs = await Job.find({ userId });
-
-      res.status(200).json({ success: true, message: 'User dashboard', user, jobs: userJobs });
-    } catch (error) {
-      console.error('Error fetching user dashboard:', error);
-      res.status(500).json({ error: 'Internal server error' });
-    }
-  },
+    res.status(201).json({ success: true, message: 'Job created successfully' });
+  } catch (error) {
+    console.error('Error during job creation:', error);
+    res.status(500).json({ success: false, message: 'Internal server error' });
+  }
 };
 
-module.exports = userController;
+exports.getJobsByUser = async (req, res) => {
+  try {
+    const userId = req.params.userId;
+
+    const userJobs = await Job.find({ userId });
+
+    res.status(200).json({ success: true, jobs: userJobs });
+  } catch (error) {
+    console.error('Error fetching user jobs:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};

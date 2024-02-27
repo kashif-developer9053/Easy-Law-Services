@@ -1,9 +1,21 @@
-// Middleware to check if the user is authenticated
+// middlewares/authMiddleware.js
+const jwt = require('jsonwebtoken');
+
 function isAuthenticated(req, res, next) {
-  if (req.isAuthenticated()) {
-    return next();
+  const token = req.header('Authorization');
+
+  if (!token) {
+    return res.status(401).json({ message: 'Authorization denied' });
   }
-  console.log('User is not authenticated. Redirecting...');
-  res.redirect('/signin');
+
+  try {
+    const decoded = jwt.verify(token, '9053');
+
+    req.user = decoded;
+    next();
+  } catch (error) {
+    res.status(401).json({ message: 'Invalid token' });
+  }
 }
-  
+
+module.exports = isAuthenticated;
