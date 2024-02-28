@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
-const passport = require('../config/passport'); // Import the passport configuration
+const passport = require('../config/passport');
 const User = require('../models/userModel');
 
 exports.register = async (req, res) => {
@@ -16,8 +16,6 @@ exports.register = async (req, res) => {
     res.status(500).json({ success: false, error: error.message });
   }
 };
-
-// controllers/userController.js
 
 exports.login = (req, res, next) => {
   passport.authenticate('local', (err, user, info) => {
@@ -51,7 +49,6 @@ exports.login = (req, res, next) => {
   })(req, res, next);
 };
 
-
 exports.logout = (req, res) => {
   try {
     req.logout((err) => {
@@ -69,7 +66,5 @@ exports.logout = (req, res) => {
 };
 
 exports.getUserDashboard = (req, res) => {
-  // This route is protected by the isAuthenticated middleware
-  // You can access the authenticated user data using req.user
   res.json({ success: true, user: req.user });
 };

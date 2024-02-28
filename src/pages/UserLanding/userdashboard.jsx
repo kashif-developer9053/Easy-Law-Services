@@ -11,21 +11,31 @@ const UserDashboard = () => {
   const history = useHistory();
 
   // Add the Axios interceptor here
-  axios.interceptors.response.use(
-    (response) => response,
-    (error) => {
-      if (error.response && error.response.status === 401) {
-        history.push('/signin');
+  useEffect(() => {
+    const interceptor = axios.interceptors.response.use(
+      (response) => response,
+      (error) => {
+        const { response } = error;
+
+        if (response && response.data && response.data.success === false) {
+          // Redirect to the sign-in page if success is false
+          history.push('/signin');
+        }
+
+        return Promise.reject(error);
       }
-      return Promise.reject(error);
-    }
-  );
+    );
+
+    // Cleanup the interceptor when the component unmounts
+    return () => {
+      axios.interceptors.response.eject(interceptor);
+    };
+  }, [history]);
+  
 
   const fetchPostedJobs = useCallback(async () => {
     try {
-      const response = await axios.get(`http://localhost:5000/api/jobs/user/${userId}`, {
-        withCredentials: true,
-      });
+      const response = await axios.get(`http://localhost:5000/api/jobs/user/${userId}`);
 
       console.log('Response from server:', response);
 
@@ -41,15 +51,19 @@ const UserDashboard = () => {
 
   useEffect(() => {
     const userData = JSON.parse(localStorage.getItem('user'));
-
-    if (userData) {
+    const token = localStorage.getItem('token');
+  
+    console.log('User Data from LocalStorage:', userData);
+    console.log('Token from LocalStorage:', token);
+  
+    if (userData && token) {
       console.log('User Data:', userData);
-
+  
       setUser(userData);
       const userIdFromStorage = userData._id;
       console.log('User ID:', userIdFromStorage);
       setUserId(userIdFromStorage);
-
+  
       // Fetch all jobs for the user
       fetchPostedJobs();
     } else {

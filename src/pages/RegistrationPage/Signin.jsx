@@ -32,17 +32,18 @@ const SignIn = () => {
 
   const handleSignIn = async () => {
     try {
-      const response = await axios.post(`${process.env.REACT_APP_API_URL}/api/user/login`, {
-        email,
-        password,
+      const response = await axios.post('http://localhost:5000/api/user/login', {
+        email: email,
+        password: password,
       });
-
+  
       if (response.data.success) {
-        const { token } = response.data;
-
-        // Store the token in localStorage
+        const { token, user } = response.data;
+  
+        // Store the token and user data in localStorage
         localStorage.setItem('token', token);
-
+        localStorage.setItem('user', JSON.stringify(user));
+  
         // Redirect to the user dashboard
         history.push('/userdashboard');
       } else {
@@ -54,6 +55,7 @@ const SignIn = () => {
       console.error('Error during sign-in:', error.message);
     }
   };
+
 
   return (
     <Container className="container">
