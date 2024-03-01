@@ -2,27 +2,8 @@ import React, { useState } from 'react';
 import { Form, Button, Container, Row, Col, Alert } from 'react-bootstrap';
 import { Link, useHistory } from 'react-router-dom';
 import axios from 'axios';
+import Cookies from 'js-cookie';  // Import Cookies from 'js-cookie'
 import './signin.css';
-
-axios.interceptors.request.use(
-  (config) => {
-    console.log('Request payload:', config.data);
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
-  }
-);
-
-axios.interceptors.response.use(
-  (response) => {
-    console.log('Response data:', response.data);
-    return response;
-  },
-  (error) => {
-    return Promise.reject(error);
-  }
-);
 
 const SignIn = () => {
   const [email, setEmail] = useState('');
@@ -37,12 +18,13 @@ const SignIn = () => {
         password: password,
       });
   
+      console.log('Response from server:', response.data);
+  
       if (response.data.success) {
         const { token, user } = response.data;
   
-        // Store the token and user data in localStorage
-        localStorage.setItem('token', token);
-        localStorage.setItem('user', JSON.stringify(user));
+        // Store the token in cookies
+        Cookies.set('token', token, { httpOnly: true });
   
         // Redirect to the user dashboard
         history.push('/userdashboard');
@@ -55,8 +37,11 @@ const SignIn = () => {
       console.error('Error during sign-in:', error.message);
     }
   };
+  
+  
+ 
 
-
+  
   return (
     <Container className="container">
       <Row className="justify-content-md-center">

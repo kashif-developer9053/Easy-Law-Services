@@ -29,22 +29,24 @@ exports.login = (req, res, next) => {
       return res.status(401).json({ success: false, message: info.message });
     }
 
-    req.login(user, (loginErr) => {
-      if (loginErr) {
-        console.error('Error during login:', loginErr);
-        return next(loginErr);
-      }
+    // Generate JWT token
+    // userController.js
+const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
+  expiresIn: '1h',
+});
 
-      console.log('Login successful');
-      return res.json({
-        success: true,
-        message: 'Login successful',
-        user: {
-          id: user._id,
-          email: user.email,
-          // Add other user properties as needed
-        },
-      });
+
+    // Set the token as a cookie
+    res.cookie('token', token, { httpOnly: true });
+
+    res.json({
+      success: true,
+      message: 'Login successful',
+      user: {
+        id: user._id,
+        email: user.email,
+        // Add other user properties as needed
+      },
     });
   })(req, res, next);
 };
@@ -56,6 +58,9 @@ exports.logout = (req, res) => {
         console.error('Error during logout:', err);
         return res.status(500).json({ success: false, message: 'Logout failed' });
       }
+
+      // Clear the token cookie on logout
+      res.clearCookie('token');
 
       res.status(200).json({ success: true, message: 'Logout successful' });
     });

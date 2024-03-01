@@ -8,15 +8,19 @@ const session = require('express-session');
 const passport = require('passport');
 const User = require('./models/userModel');
 const userRoutes = require('./routes/userRoutes');
+const jobRoutes = require('./routes/jobRoutes');
+
 
 const app = express();
 const PORT = 5000;
+require('dotenv').config();
 
 app.use(bodyParser.json());
 app.use(cors({
   origin: 'http://localhost:3000',
   credentials: true,
 }));
+
 app.use(session({ secret: process.env.SESSION_SECRET || 'default-secret-key', resave: true, saveUninitialized: true }));
 app.use(passport.initialize());
 app.use(passport.session());
@@ -37,6 +41,8 @@ app.use((err, req, res, next) => {
 });
 
 app.use('/api/user', userRoutes);
+app.use('/api/jobs', jobRoutes);
+
 
 // ... other routes and middleware
 

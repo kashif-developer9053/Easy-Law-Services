@@ -1,3 +1,4 @@
+// routes/jobRoutes.js
 const express = require('express');
 const jobController = require('../controllers/jobController');
 const isAuthenticated = require('../middlewares/authMiddleware');

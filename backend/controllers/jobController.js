@@ -12,6 +12,8 @@ exports.createJob = async (req, res) => {
       location,
     });
 
+    console.log('Received a request to create a job.');
+
     await newJob.save();
 
     res.status(201).json({ success: true, message: 'Job created successfully' });
